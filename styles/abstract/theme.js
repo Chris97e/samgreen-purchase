@@ -4,6 +4,8 @@ import { fonts } from "styles/abstract/fonts";
 import { radius } from "./radius";
 import { shadow } from "./shadow";
 import { size } from "./size";
+import createBreakpoints from "@material-ui/core/styles/createBreakpoints";
+const breakpoints = createBreakpoints({});
 
 const theme = createTheme({
   overrides: {
@@ -229,6 +231,11 @@ const theme = createTheme({
           backgroundColor: colors.primary.dark,
           boxShadow: "none",
         },
+
+        "&:active": {
+          backgroundColor: `${colors.primary.dark} !important`,
+          
+        },
       },
     },
     //--------------------------------------------------------->Typography
@@ -238,6 +245,9 @@ const theme = createTheme({
         fontWeight: "500",
         fontFamily: fonts.primary,
         color: colors.secondary.main,
+        [breakpoints.down("xs")]: {
+          fontSize: "2.5rem"
+        }
       },
       h2: {
         fontSize: "2.25rem",

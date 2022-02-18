@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import axiosDatabase from "utils/axios/axiosDatabase";
+
 
 const useValidUsername = (query, open) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +12,7 @@ const useValidUsername = (query, open) => {
       let cancel;
       setIsLoading(true);
 
-      axios({
+      axiosDatabase({
         method: "GET",
         url: `${process.env.CHECK_USER}${query}`,
         cancelToken: new axios.CancelToken((c) => (cancel = c)),

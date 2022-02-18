@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Fragment } from "react";
 import Forest from "components/atoms/banners/forest/Forest";
 import ThankSection from "components/molecules/thanks-section/ThankSection";
-import axiosWooComerce from "utils/axiosWoocomerce";
+import axiosStore from "utils/axios/axiosStore";
 import redirect from "nextjs-redirect";
 import ScreenContainer from "components/atoms/container/screen-container/ScreenContainer";
 import { CircularProgress } from "@material-ui/core";
@@ -24,7 +24,10 @@ function Purchase(props) {
           <link rel="icon" href="/favicon.svg" />
         </Head>
         <Forest />
-        <ThankSection ticket={props?.ticket} isMultiProduct={props?.isMultiProduct} />
+        <ThankSection
+          ticket={props?.ticket}
+          isMultiProduct={props?.isMultiProduct}
+        />
       </Fragment>
     );
   } else {
@@ -42,7 +45,7 @@ Purchase.getInitialProps = async (ctx) => {
   let ticket = null;
   const id = ctx.query.purchase;
   try {
-    const res = await axiosWooComerce.get(`${process.env.ORDERS}${id}`);
+    const res = await axiosStore.get(`${process.env.ORDERS}${id}`);
     ticket = res.data;
   } catch (err) {
     console.error(err);

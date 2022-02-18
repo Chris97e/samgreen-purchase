@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const axiosWoocomerce = axios.create({
-  baseURL: process.env.BASE_URL,
+const axiosStore = axios.create({
+  baseURL: process.env.BASE_URL_STORE,
   headers: {
     "content-type": "application/json",
   },
@@ -11,4 +11,4 @@ const axiosWoocomerce = axios.create({
   },
 });
 
-export default axiosWoocomerce;
+export default axiosStore;

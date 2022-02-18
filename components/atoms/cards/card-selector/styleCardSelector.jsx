@@ -26,6 +26,14 @@ export const useStyles = makeStyles((theme) => ({
             '& svg': {
                 fill: colors.primary.main,
             }
+        },
+        [theme.breakpoints.down('xs')]:{
+            '&:hover': {
+                boxShadow: shadow.inputShadowHover,
+                '& svg': {
+                    fill: `${colors.secondary.main} !important`,
+                }
+            }
         }
     },
 

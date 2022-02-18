@@ -17,9 +17,7 @@ const Footer = () => {
       <Box className={classes.right}>
         <Typography
           variant="body1"
-          sx={{
-            fontSize: "1rem",
-          }}
+          className={classes.textRights}
         >
           {footer.copyright}
         </Typography>

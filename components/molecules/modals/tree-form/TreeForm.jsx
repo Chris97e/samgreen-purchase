@@ -40,10 +40,6 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
     setUser(event.target.value);
   };
 
-  useEffect(() => {
-    setSelectedLocation("placeholder");
-  }, [selectedContinent]);
-
   const plantTreeAction = async () => {
     if (user?.length === 0) {
       setErrorMessage("All fields are required");
@@ -161,6 +157,7 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
                   icon={icon}
                   selectedCode={selectedContinent?.code}
                   action={() => {
+                    setSelectedLocation("placeholder");
                     setSelectedContinent({ code: code, name: name });
                   }}
                 />

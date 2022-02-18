@@ -8,6 +8,7 @@ import Questions from "../modals/questions/Questions";
 import CustomModal from "components/atoms/modal/custom-modal/CustomModal";
 import FloatingButton from "components/atoms/buttons/floating-button/FloatingButton";
 import RegisterModal from "../modals/register/RegisterModal";
+import MainContainer from "components/atoms/container/main-container/MainContainer";
 
 const ThankSection = ({ ticket, isMultiProduct }) => {
   const [openForm, setOpenForm] = useState(false);
@@ -20,7 +21,7 @@ const ThankSection = ({ ticket, isMultiProduct }) => {
 
   return (
     <Fragment>
-      <Container className={classes.mainContainer}>
+      <MainContainer>
         <Box>
           <Typography className={classes.subtitle} variant="subtitle1">
             {tree.subtitle}
@@ -54,7 +55,7 @@ const ThankSection = ({ ticket, isMultiProduct }) => {
             variant="outlined"
           />
         </Box>
-      </Container>
+      </MainContainer>
 
       <FloatingButton
         action={() => {

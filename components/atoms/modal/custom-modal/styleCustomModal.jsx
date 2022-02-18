@@ -20,5 +20,8 @@ export const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         backdropFilter: `drop-shadow(${shadow.modalShadow})`,
+        [theme.breakpoints.down('xs')]:{
+            maxHeight:'80vh',
+        }
     }
 }))
