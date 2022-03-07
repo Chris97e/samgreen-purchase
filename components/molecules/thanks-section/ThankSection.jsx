@@ -19,6 +19,11 @@ const ThankSection = ({ ticket, isMultiProduct }) => {
   const closeRegister = () => setOpenRegister(false);
   const classes = useStyles();
 
+  const openFormFromRegister = () => {
+    setOpenForm(true);
+    //closeRegister();
+  };
+
   return (
     <Fragment>
       <MainContainer>
@@ -76,7 +81,10 @@ const ThankSection = ({ ticket, isMultiProduct }) => {
       </CustomModal>
 
       <CustomModal isOpen={openRegister} onClose={closeRegister}>
-        <RegisterModal close={closeRegister} />
+        <RegisterModal
+          close={closeRegister}
+          openFormPlant={openFormFromRegister}
+        />
       </CustomModal>
     </Fragment>
   );

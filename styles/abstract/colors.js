@@ -20,6 +20,8 @@ export const colors = {
       border: '#C2C9CD',
       light:'#F4F5F6',
       icon: '#E0E0E0',
+      container: '#FBFBFB',
+
     },
     border:{
       light:'#EBEAF0',

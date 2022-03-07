@@ -1,6 +1,5 @@
 import {
   Box,
-  Fade,
   Grid,
   InputAdornment,
   MenuItem,
@@ -10,7 +9,7 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import { useStyles } from "components/molecules/modals/tree-form/styleTreeForm";
 import { modalTree } from "lang/english/modalTree";
 import CustomIconButton from "components/atoms/buttons/custom-icon-button/CustomIconButton";
@@ -24,58 +23,146 @@ import SimpleButton from "components/atoms/buttons/simple-button/SimpleButton";
 import CustomModal from "components/atoms/modal/custom-modal/CustomModal";
 import ErrorModal from "components/molecules/modals/error/ErrorModal";
 import FadeInContainer from "components/atoms/container/fade-in-cotainer/FadeInContainer";
+import axiosDatabase from "utils/axios/axiosDatabase";
+import { errorsSystem } from "lang/english/errors";
+import { plantATreeBundle, setAndOpenError } from "utils/globalFunctions";
+import axiosStore from "utils/axios/axiosStore";
+import { useRouter } from "next/router";
 
 const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
   const classes = useStyles();
+  const router = useRouter();
   const [selectedContinent, setSelectedContinent] = useState({});
   const [selectedLocation, setSelectedLocation] = useState("placeholder");
   const [user, setUser] = useState("");
+  const [multiUsers, setMultiUsers] = useState(
+    ticket?.line_items?.map(() => "")
+  );
   const [isAllWithSameProfile, setIsAllWithSameProfile] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("All fields are required");
+  const [errorMessage, setErrorMessage] = useState(errorsSystem("default"));
   const [errorOpen, setErrorOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
   const closeErrorModal = () => setErrorOpen(false);
   const handleChange = (event) => {
     setUser(event.target.value);
   };
 
+  const handleMultiChange = (prop) => (event) => {
+    multiUsers[prop] = event.target.value;
+    setMultiUsers([...multiUsers]);
+  };
+
+  const submitOneProduct = async (errorBundles) => {
+    const userExist = await axiosDatabase
+      .get(`${process.env.CHECK_USER}${user}`)
+      .then((res) => res.data);
+    console.log(userExist);
+
+    //If the user does not exist display error message
+    if (!userExist?.message) {
+      setAndOpenError(errorsSystem("profileNotFound", user), errorBundles);
+      return;
+    }
+
+    /*const plantATree = await axiosDatabase.post(
+        process.env.PLANT_A_TREE,
+        plantATreeBundle(ticket?.id, selectedContinent, selectedLocation, [
+          { nickname: user, productid: ticket?.line_items[0]?.id },
+        ])
+      );*/
+  };
+
+  const submitMultiProduct = async (errorBundles) => {
+    if (isAllWithSameProfile) {
+      const userExist = await axiosDatabase
+        .get(`${process.env.CHECK_USER}${user}`)
+        .then((res) => res.data);
+      console.log(userExist);
+
+      //If the user does not exist display error message
+      if (!userExist?.message) {
+        setAndOpenError(errorsSystem("profileNotFound", user), errorBundles);
+        return;
+      }
+
+      const plantATree = await axiosDatabase.post(
+        process.env.PLANT_A_TREE,
+        plantATreeBundle(
+          ticket?.id,
+          selectedContinent,
+          selectedLocation,
+          ticket?.line_items?.map((item) => {
+            return { nickname: user, productid: item?.id };
+          })
+        )
+      );
+    } else {
+      const checkAllUsers = await Promise.all(
+        multiUsers.map((item) =>
+          axiosDatabase
+            .get(`${process.env.CHECK_USER}${item}`)
+            .then((res) => res.data)
+        )
+      );
+
+      const plantATree = await axiosDatabase.post(
+        process.env.PLANT_A_TREE,
+        plantATreeBundle(
+          ticket?.id,
+          selectedContinent,
+          selectedLocation,
+          ticket?.line_items?.map((item, index) => {
+            return { nickname: multiUsers[index], productid: item?.id };
+          })
+        )
+      );
+    }
+  };
+
   const plantTreeAction = async () => {
-    if (user?.length === 0) {
-      setErrorMessage("All fields are required");
-      setErrorOpen(true);
-      return;
-    }
+    const errorBundles = {
+      setIsLoading,
+      setErrorMessage,
+      setErrorOpen,
+    };
 
-    if (!selectedContinent?.code) {
-      setErrorMessage("All fields are required");
-      setErrorOpen(true);
-      return;
-    }
-
-    if (selectedLocation === "placeholder") {
-      setErrorMessage("All fields are required");
-      setErrorOpen(true);
+    if (
+      user?.length === 0 ||
+      !selectedContinent?.code ||
+      selectedLocation === "placeholder"
+    ) {
+      setAndOpenError(errorsSystem("allFields"), errorBundles);
       return;
     }
 
     setIsLoading(true);
     try {
-      const info = await fetch(`${process.env.CHECK_USER}${user}`)
-        .then((res) => res.json())
-        .then((out) => out);
-
-      if (!info?.message) {
-        setErrorMessage("User does not exist");
-        setErrorOpen(true);
-        setIsLoading(false);
+      if (isMultiProduct) {
+        await submitMultiProduct(errorBundles);
+      } else {
+        await submitOneProduct(errorBundles);
       }
 
-      setIsLoading(false);
+      const updateStore = await axiosStore({
+        method: "PATCH",
+        url: `${process.env.ORDERS}${ticket?.id}`,
+        params: {
+          status: "on-hold",
+        },
+      });
+
+      if (updateStore.status === 200) {
+        router.push(`${process.env.CHECK_STATUS}${ticket?.id}`);
+        return;
+      }
+
+      //In case somenthing went wrong
+      setAndOpenError(errorsSystem("productsNoLinked"), errorBundles);
     } catch (error) {
-      setIsLoading(false);
-      setErrorMessage("Error, please try again");
-      setErrorOpen(true);
+      setAndOpenError(
+        errorsSystem("customError", error.toString()),
+        errorBundles
+      );
     }
   };
 
@@ -110,12 +197,14 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
 
     return (
       <FadeInContainer in={!isAllWithSameProfile}>
-        {items.map((item) => (
+        {items.map((item, index) => (
           <InputHolder key={item?.id}>
             <CustomLabel label={item?.name} />
             <TextField
               variant="outlined"
               placeholder={form.profilePlaceholdar}
+              value={multiUsers[index]}
+              onChange={handleMultiChange(index)}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -229,7 +318,11 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
       </FormContainer>
 
       <CustomModal isOpen={errorOpen} onClose={closeErrorModal}>
-        <ErrorModal close={closeErrorModal} title={errorMessage} />
+        <ErrorModal
+          close={closeErrorModal}
+          title={errorMessage?.title}
+          description={errorMessage?.message}
+        />
       </CustomModal>
     </Fragment>
   );

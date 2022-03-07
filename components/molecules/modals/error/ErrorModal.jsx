@@ -12,7 +12,7 @@ const ErrorModal = ({ title = "All fields are required ", description = "Nam nec
             <CustomIconButton action={close}/>
             <Box className={classes.container}>
                 <SvgIcon  style={{ fontSize: '2.5rem' }} component={Warning} color='primary' />
-                <Typography variant='h4'>{title}</Typography>
+                <Typography variant='h4' className={classes.title} >{title}</Typography>
             </Box>
             <Typography style={{fontSize: '1rem', marginTop:'1rem'}}>{description}</Typography>
             <Box className={classes.buttonContainer}>

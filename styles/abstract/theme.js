@@ -255,6 +255,12 @@ const theme = createTheme({
         fontFamily: fonts.primary,
         color: colors.secondary.main,
       },
+      h3: {
+        fontSize: "1.9rem",
+        fontWeight: "500",
+        fontFamily: fonts.primary,
+        color: colors.secondary.main,
+      },
       h4: {
         fontSize: "1.5rem",
         fontWeight: "500",

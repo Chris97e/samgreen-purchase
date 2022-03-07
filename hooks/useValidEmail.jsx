@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import axiosDatabase from "utils/axios/axiosDatabase";
 
-
-const useValidUsername = (query, open) => {
+const useValidEmail = (query, open) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
@@ -11,9 +10,10 @@ const useValidUsername = (query, open) => {
     if (query?.length > 0) {
       let cancel;
       setIsLoading(true);
+
       axiosDatabase({
         method: "GET",
-        url: `${process.env.CHECK_USER}${query}`,
+        url: `${process.env.CHECK_EMAIL}${query}`,
         cancelToken: new axios.CancelToken((c) => (cancel = c)),
       })
         .then((res) => {
@@ -34,4 +34,4 @@ const useValidUsername = (query, open) => {
   return { isValid, isLoading };
 };
 
-export default useValidUsername;
+export default useValidEmail;

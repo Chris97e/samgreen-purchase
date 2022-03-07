@@ -17,7 +17,7 @@ function MyApp({ Component, pageProps }) {
     <Fragment>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
         <Footer/>
       </ThemeProvider>
     </Fragment>

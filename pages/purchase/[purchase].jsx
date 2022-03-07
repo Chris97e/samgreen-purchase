@@ -7,6 +7,7 @@ import axiosStore from "utils/axios/axiosStore";
 import redirect from "nextjs-redirect";
 import ScreenContainer from "components/atoms/container/screen-container/ScreenContainer";
 import { CircularProgress } from "@material-ui/core";
+import { useRouter } from "next/router";
 
 const Redirect = redirect(process.env.HOME);
 
@@ -14,6 +15,7 @@ function Purchase(props) {
   useEffect(() => {
     console.log(props);
   }, []);
+  const router = useRouter();
 
   if (props?.ticket?.id && props?.ticket?.status == "processing") {
     return (
@@ -29,6 +31,18 @@ function Purchase(props) {
           isMultiProduct={props?.isMultiProduct}
         />
       </Fragment>
+    );
+  } else if (
+    props?.ticket?.id &&
+    (props?.ticket?.status == "on-hold" || props?.ticket?.status == "completed")
+  ) {
+    if (typeof window !== "undefined") {
+      router.push(`/purchase-state/${props?.ticket?.id}`);
+    }
+    return (
+      <ScreenContainer>
+        <CircularProgress />
+      </ScreenContainer>
     );
   } else {
     return (
