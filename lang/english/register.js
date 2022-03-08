@@ -7,7 +7,8 @@ export const register = {
   labelEmail: "Email",
   labelPlaceholderEmail: "your email",
   labelPassword: "Password",
-  passwordTooltip:"Password must be at least 8 characters",
+  labelPasswordRepeat: "Password Repeat",
+  passwordTooltip:"Password must be at least 8 characters, one number, one mayus and a special character",
   button: "Create account",
   errors: {
     nickname: {

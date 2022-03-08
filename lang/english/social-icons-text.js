@@ -3,7 +3,7 @@ import Tiktok from "public/svg/components/Tiktok";
 import Whatsapp from "public/svg/components/Whatsapp";
 import Youtube from "public/svg/components/Youtube";
 
-export const socialIcons = [
+export const socialIconsText = [
   {
     icon: Youtube,
     url: "https://www.youtube.com/channel/UCXXk2arH1fEBm4DExhf1lxw",

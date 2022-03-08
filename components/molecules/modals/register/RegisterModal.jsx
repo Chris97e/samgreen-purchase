@@ -33,7 +33,7 @@ import axiosDatabase from "utils/axios/axiosDatabase";
 import IconState from "components/atoms/Icons/icons-state/IconState";
 import FocusText from "components/atoms/text/focus-text/FocusText";
 
-const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
+const RegisterModal = ({ close = () => {}, openFormPlant = () => {} }) => {
   const classes = useStyles();
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [userSearch, setUserSearch] = useState("");
@@ -73,7 +73,7 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
       setErrorMessage,
       setErrorOpen,
     };
-    /*
+
     if (!isValidUser) {
       setAndOpenError(errorsSystem("userTaken", userSearch), errorBundles);
       return;
@@ -82,23 +82,21 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
     if (!isValidEmail) {
       setAndOpenError(errorsSystem("emailTaken", emailSearch), errorBundles);
       return;
-    }*/
-
+    }
     try {
-      let bodyFormData = new FormData();
-      bodyFormData.append("nickname", userSearch);
-      bodyFormData.append("email", emailSearch);
-      bodyFormData.append("password", data?.password);
-      bodyFormData.append("password_confirmation", data?.password);
-      console.log("hellou");
-
       const register = await axiosDatabase({
         method: "POST",
         url: process.env.REGISTER,
-        data: bodyFormData,
+        data: JSON.stringify({
+          nickname: userSearch,
+          email: emailSearch,
+          password: data?.password,
+          password_confirmation: data?.password,
+        }),
       });
       console.log(register);
       setIsLoading(false);
+      setIsRegisterd(true);
     } catch (error) {
       setAndOpenError(
         errorsSystem("customError", error.toString()),
@@ -125,7 +123,10 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
               <strong>{emailSearch}</strong>
               {register.registerCompleted.description}
             </Typography>
-            <SimpleButton action={openFormPlant} title={register.registerCompleted.button}/>
+            <SimpleButton
+              action={openFormPlant}
+              title={register.registerCompleted.button}
+            />
           </Box>
         </Fade>
       );
@@ -180,32 +181,60 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
           {/*-------------------------------------------------------Email*/}
           <InputHolder>
             <CustomLabel label={register.labelEmail} />
-            <TextField
-              variant="outlined"
-              fullWidth
-              placeholder={register.labelPlaceholderEmail}
-              value={emailSearch}
-              onChange={(e) => {
-                setEmailSearch(e.target.value);
+
+            <Controller
+              name="email"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: {
+                  value: true,
+                  message: register.errors.email.one,
+                },
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: register.errors.email.two,
+                },
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    {isLoadingEmailCheck ? (
-                      <span style={{ marginRight: "12px", marginTop: "6px" }}>
-                        <CircularProgress size={22} />
-                      </span>
-                    ) : null}
-                    <SvgIcon component={Email} />
-                  </InputAdornment>
-                ),
-              }}
+              render={({ field }) => (
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  placeholder={register.labelPlaceholderEmail}
+                  value={field.value}
+                  onChange={(e) => {
+                    setEmailSearch(e.target.value);
+                    field.onChange(e);
+                  }}
+                  name={field.name}
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {isLoadingEmailCheck ? (
+                          <span
+                            style={{ marginRight: "12px", marginTop: "6px" }}
+                          >
+                            <CircularProgress size={22} />
+                          </span>
+                        ) : null}
+                        <SvgIcon component={Email} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
             />
+
             {!isValidEmail &&
               emailSearch?.length > 4 &&
               !isLoadingEmailCheck && (
                 <FormHelperText>This email is already taken</FormHelperText>
               )}
+            {errors?.email && (
+              <FormHelperText>{errors?.email?.message}</FormHelperText>
+            )}
           </InputHolder>
 
           {/*-------------------------------------------------------Password*/}
@@ -224,13 +253,17 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
                   value: true,
                   message: register.errors.password.one,
                 },
+                pattern: {
+                  value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
+                  message: register.passwordTooltip,
+                },
               }}
               render={({ field }) => (
                 <TextField
                   variant="outlined"
                   fullWidth
                   type={isShowPassword ? "text" : "password"}
-                  placeholder={register.labelPlaceholderEmail}
+                  placeholder={register.labelPassword}
                   {...field}
                   InputProps={{
                     endAdornment: (
@@ -272,7 +305,7 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
 
           {/*-------------------------------------------------------Repeat Password*/}
           <InputHolder>
-            <CustomLabel label={register.labelPassword} />
+            <CustomLabel label={register.labelPasswordRepeat} />
             <Controller
               name="passwordRepeat"
               control={control}
@@ -293,7 +326,7 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
                   variant="outlined"
                   fullWidth
                   type={isShowPassword ? "text" : "password"}
-                  placeholder={register.labelPlaceholderEmail}
+                  placeholder={register.labelPasswordRepeat}
                   {...field}
                   InputProps={{
                     endAdornment: (
@@ -342,7 +375,7 @@ const RegisterModal = ({ close = () => {}, openFormPlant = ()=>{} }) => {
   return (
     <Fragment>
       <CustomIconButton action={close} />
-      {renderProccess(true)}
+      {renderProccess(isRegisterd)}
 
       <CustomModal isOpen={errorOpen} onClose={closeErrorModal}>
         <ErrorModal

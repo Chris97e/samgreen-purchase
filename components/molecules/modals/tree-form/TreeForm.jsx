@@ -61,15 +61,26 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
     //If the user does not exist display error message
     if (!userExist?.message) {
       setAndOpenError(errorsSystem("profileNotFound", user), errorBundles);
-      return;
+      return false;
     }
 
-    /*const plantATree = await axiosDatabase.post(
-        process.env.PLANT_A_TREE,
-        plantATreeBundle(ticket?.id, selectedContinent, selectedLocation, [
-          { nickname: user, productid: ticket?.line_items[0]?.id },
-        ])
-      );*/
+    const plantATree = await axiosDatabase.post(
+      process.env.PLANT_A_TREE,
+      JSON.stringify(
+        plantATreeBundle(
+          ticket?.id,
+          selectedContinent?.name,
+          selectedLocation,
+          [{ nickname: user, productid: ticket?.line_items[0]?.id }]
+        )
+      )
+    );
+
+    if (plantATree?.status === 200) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   const submitMultiProduct = async (errorBundles) => {
@@ -82,20 +93,28 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
       //If the user does not exist display error message
       if (!userExist?.message) {
         setAndOpenError(errorsSystem("profileNotFound", user), errorBundles);
-        return;
+        return false;
       }
 
       const plantATree = await axiosDatabase.post(
         process.env.PLANT_A_TREE,
-        plantATreeBundle(
-          ticket?.id,
-          selectedContinent,
-          selectedLocation,
-          ticket?.line_items?.map((item) => {
-            return { nickname: user, productid: item?.id };
-          })
+        JSON.stringify(
+          plantATreeBundle(
+            ticket?.id,
+            selectedContinent?.name,
+            selectedLocation,
+            ticket?.line_items?.map((item) => {
+              return { nickname: user, productid: item?.id };
+            })
+          )
         )
       );
+
+      if (plantATree?.status === 200) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       const checkAllUsers = await Promise.all(
         multiUsers.map((item) =>
@@ -105,17 +124,38 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
         )
       );
 
+      //Check if all profile exists
+      if (
+        !checkAllUsers?.every((item, index) => {
+          if (item?.message === true) return true;
+          setAndOpenError(
+            errorsSystem("profileNotFound", multiUsers[index]),
+            errorBundles
+          );
+          return false;
+        })
+      ) {
+        return false;
+      }
+
       const plantATree = await axiosDatabase.post(
         process.env.PLANT_A_TREE,
-        plantATreeBundle(
-          ticket?.id,
-          selectedContinent,
-          selectedLocation,
-          ticket?.line_items?.map((item, index) => {
-            return { nickname: multiUsers[index], productid: item?.id };
-          })
+        JSON.stringify(
+          plantATreeBundle(
+            ticket?.id,
+            selectedContinent?.name,
+            selectedLocation,
+            ticket?.line_items?.map((item, index) => {
+              return { nickname: multiUsers[index], productid: item?.id };
+            })
+          )
         )
       );
+      if (plantATree?.status === 200) {
+        return true;
+      } else {
+        return false;
+      }
     }
   };
 
@@ -126,23 +166,46 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
       setErrorOpen,
     };
 
+    //If it is a single product and the user haven't be typing
+    if (!isMultiProduct && user?.length === 0) {
+      setAndOpenError(errorsSystem("allFields"), errorBundles);
+      return;
+    }
+
+    //If it is a multiproduct and each product has a unique profile
     if (
-      user?.length === 0 ||
-      !selectedContinent?.code ||
-      selectedLocation === "placeholder"
+      isMultiProduct &&
+      !isAllWithSameProfile &&
+      multiUsers?.every((item) => item?.length === 0)
     ) {
       setAndOpenError(errorsSystem("allFields"), errorBundles);
       return;
     }
 
+    //If it is a multiproduct and all the product has the same profile
+    if (isMultiProduct && isAllWithSameProfile && user?.length === 0) {
+      setAndOpenError(errorsSystem("allFields"), errorBundles);
+      return;
+    }
+
+    if (!selectedContinent?.code || selectedLocation === "placeholder") {
+      setAndOpenError(errorsSystem("allFields"), errorBundles);
+      return;
+    }
+
     setIsLoading(true);
+    let isRequestDone = false;
     try {
       if (isMultiProduct) {
-        await submitMultiProduct(errorBundles);
+        isRequestDone = await submitMultiProduct(errorBundles);
       } else {
-        await submitOneProduct(errorBundles);
+        isRequestDone = await submitOneProduct(errorBundles);
       }
 
+      //Only I can move forward if the request of plant your tree was done succesfully
+      if (!isRequestDone) return;
+
+      
       const updateStore = await axiosStore({
         method: "PATCH",
         url: `${process.env.ORDERS}${ticket?.id}`,
