@@ -1,5 +1,4 @@
 import { CssBaseline, ThemeProvider } from "@material-ui/core";
-import  {  Head } from "next/document";
 import { Fragment, useEffect } from "react";
 import "styles/globals.css";
 import theme from "styles/abstract/theme";
