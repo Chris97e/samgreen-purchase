@@ -13,6 +13,15 @@ export const useStyles = makeStyles((theme) => ({
     display:'flex',
     flexDirection:'row',
     justifyContent:'space-between',
+  },
+  gridContainer:{
+    display: 'grid',
+    gap:'1rem',
+    maxWidth:'100%',
+    gridTemplateColumns:' 1fr 1fr 1fr',
+    [theme.breakpoints.down('xs')]:{
+      gridTemplateColumns:' 1fr',
+    }
   }
 }));
 

@@ -14,6 +14,7 @@ export const useStyles = makeStyles((theme) => ({
         boxShadow: shadow.inputShadow,
         display: 'flex',
         justifyContent: 'center',
+        
         alignItems: 'center',
         flexDirection: 'column',
         transition: 'box-shadow 200ms ease-in-out',
@@ -29,10 +30,8 @@ export const useStyles = makeStyles((theme) => ({
         },
         [theme.breakpoints.down('xs')]:{
             '&:hover': {
-                boxShadow: shadow.inputShadowHover,
-                '& svg': {
-                    fill: `${colors.secondary.main} !important`,
-                }
+                boxShadow: 'none',
+                
             }
         }
     },

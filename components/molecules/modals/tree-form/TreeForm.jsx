@@ -205,7 +205,6 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
       //Only I can move forward if the request of plant your tree was done succesfully
       if (!isRequestDone) return;
 
-      
       const updateStore = await axiosStore({
         method: "PATCH",
         url: `${process.env.ORDERS}${ticket?.id}`,
@@ -300,22 +299,21 @@ const TreeForm = ({ close = () => {}, ticket, isMultiProduct }) => {
       <FormContainer>
         <InputHolder>
           <CustomLabel label={form.continent} />
-          <Grid container spacing={3}>
+          <Box className={classes.gridContainer}>
             {form.continentArray.map(({ code, name, icon }) => (
-              <Grid key={code} item xs={6} sm={4}>
-                <CardSelector
-                  code={code}
-                  name={name}
-                  icon={icon}
-                  selectedCode={selectedContinent?.code}
-                  action={() => {
-                    setSelectedLocation("placeholder");
-                    setSelectedContinent({ code: code, name: name });
-                  }}
-                />
-              </Grid>
+              <CardSelector
+                key={code}
+                code={code}
+                name={name}
+                icon={icon}
+                selectedCode={selectedContinent?.code}
+                action={() => {
+                  setSelectedLocation("placeholder");
+                  setSelectedContinent({ code: code, name: name });
+                }}
+              />
             ))}
-          </Grid>
+          </Box>
         </InputHolder>
 
         <FadeInContainer in={selectedContinent?.code != null}>
