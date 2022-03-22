@@ -8,6 +8,7 @@ export const useStyles = makeStyles((theme) => ({
     buttonContainer: {
         display: "flex",
         gap: "2rem",
+        flexWrap:'wrap',
         marginTop: "69px",
         [theme.breakpoints.down('xs')]:{
             

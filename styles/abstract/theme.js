@@ -182,6 +182,9 @@ const theme = createTheme({
       text: {
         padding: "10px 20px",
       },
+      label:{
+        justifyContent:'flex-start',
+      },
 
       root: {
         backgroundColor: colors.primary.main,

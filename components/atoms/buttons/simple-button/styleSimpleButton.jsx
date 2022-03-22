@@ -13,5 +13,11 @@ export const useStyles = makeStyles((theme) => ({
   },
   lottie:{
     border:'1px solid red',
+  },
+  textContainer:{
+    overflow:'hidden',
+    textOverflow:'ellipsis',
+    whiteSpace:'nowrap',
   }
+
 }));

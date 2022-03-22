@@ -21,7 +21,7 @@ const SimpleButton = ({
 }) => {
   const classes = useStyles();
   return (
-    <Button disabled={isLoading} type="submit" className={classes.main} variant={variant} onClick={action}>
+    <Button disabled={isLoading} title={title} type="submit" className={classes.main} variant={variant} onClick={action}>
       {isLoading ?
         <Lottie
           options={{
@@ -34,7 +34,7 @@ const SimpleButton = ({
           }
 
         /> :
-        <Fragment><span>{title}</span> {isIcon && <SvgIcon component={ArrowRight} />}</Fragment>}
+        <Fragment><span className={classes.textContainer}>{title}</span> {isIcon && <SvgIcon component={ArrowRight} />}</Fragment>}
     </Button>
   );
 };

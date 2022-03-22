@@ -11,7 +11,7 @@ const Footer = () => {
     <Box className={classes.main} component="footer">
       <Box className={classes.left}>
         <a target="_blank" href="https://www.sam-green.com/home" rel="noopener noreferrer">
-          <Image src={'/svg/logo/logo.svg'} width={'150px'} height={'30px'} />
+          <Image src={'/svg/logo/logo.svg'} width={'150px'}  height={'30px'} />
         </a>
       </Box>
       <Box className={classes.right}>

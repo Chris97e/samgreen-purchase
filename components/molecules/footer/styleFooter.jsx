@@ -16,7 +16,8 @@ export const useStyles = makeStyles((theme) => ({
     
   },
   left: {
-    width: "50%",
+    width: "fit-content",
+    minWidth:'150px',
     display: "flex",
     alignItems:'center',
     [theme.breakpoints.down('xs')]:{
@@ -25,7 +26,7 @@ export const useStyles = makeStyles((theme) => ({
     }
   },
   right: {
-    width: "50%",
+    width: "-webkit-fill-available",
     display: "flex",
     justifyContent: "flex-end",
     alignItems:'center',
@@ -37,8 +38,9 @@ export const useStyles = makeStyles((theme) => ({
   },
   textRights:{
     [theme.breakpoints.down('xs')]:{
-     marginTop:'-20px',
-     marginBottom:'10px'
+     marginTop:'0px',
+     marginBottom:'10px',
+     textAlign:'center',
     }
   }
 }));
