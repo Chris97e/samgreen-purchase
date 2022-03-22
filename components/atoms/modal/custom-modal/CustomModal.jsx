@@ -18,7 +18,7 @@ const CustomModal = (props) => {
         >
             <Fade in={props.isOpen}>
                 <span>
-                    <Box className={classes.main}>
+                    <Box className={classes.main} style={{width:props?.width?props.width:'auto'}}>
                         {props.children}
                     </Box>
                 </span>

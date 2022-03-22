@@ -12,11 +12,14 @@ export const register = {
   button: "Create account",
   errors: {
     nickname: {
-      one: "* The Nickname is required",
+      one: "* The profile username is required",
+      two: "* The profile username must have at least 6 characters",
+      three:"This user is already taken",
     },
     email: {
       one: "* The Email is required",
       two: "* The Email is invalid",
+      three:"This email is already taken",
     },
     password: {
       one: "* The password is required",

@@ -11,7 +11,7 @@ export const useStyles = makeStyles((theme) => ({
     transform: "translate(-50%, -50%)",
     background: colors.white.main,
     borderRadius: radius.secondary,
-    maxWidth: "700px",
+    maxWidth: "800px",
     maxHeight: "90vh",
     minHeight: "20hv",
     overflow: "hidden",

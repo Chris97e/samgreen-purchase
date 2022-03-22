@@ -80,7 +80,7 @@ const ThankSection = ({ ticket, isMultiProduct }) => {
         <Questions close={closeQuestion} />
       </CustomModal>
 
-      <CustomModal isOpen={openRegister} onClose={closeRegister}>
+      <CustomModal isOpen={openRegister} onClose={closeRegister} width={'600px'}>
         <RegisterModal
           close={closeRegister}
           openFormPlant={openFormFromRegister}

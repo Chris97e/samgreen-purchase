@@ -150,31 +150,57 @@ const RegisterModal = ({ close = () => {}, openFormPlant = () => {} }) => {
           <InputHolder>
             <CustomLabel label={register.labelNickname} />
 
-            <TextField
-              variant="outlined"
-              fullWidth
-              placeholder={register.labelPlaceholderNickname}
-              value={userSearch}
-              onChange={(e) => {
-                setUserSearch(e.target.value);
+            <Controller
+              name="username"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: {
+                  value: true,
+                  message: register.errors.nickname.one,
+                },
+                minLength: {
+                  value: 6,
+                  message: register.errors.nickname.two,
+                },
               }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    {isLoadingUserCheck ? (
-                      <span style={{ marginRight: "12px", marginTop: "6px" }}>
-                        <CircularProgress size={22} />
-                      </span>
-                    ) : null}
+              render={({ field }) => (
+                <TextField
+                  variant="outlined"
+                  fullWidth
+                  placeholder={register.labelPlaceholderNickname}
+                  value={field.value}
+                  onChange={(e) => {
+                    setUserSearch(e.target.value);
+                    field.onChange(e);
+                  }}
+                  name={field.name}
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {isLoadingUserCheck ? (
+                          <span
+                            style={{ marginRight: "12px", marginTop: "6px" }}
+                          >
+                            <CircularProgress size={22} />
+                          </span>
+                        ) : null}
 
-                    <SvgIcon component={User} />
-                  </InputAdornment>
-                ),
-              }}
+                        <SvgIcon component={User} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              )}
             />
 
             {!isValidUser && userSearch?.length > 1 && !isLoadingUserCheck && (
-              <FormHelperText>This user is already taken</FormHelperText>
+              <FormHelperText>{register.errors.nickname.three}</FormHelperText>
+            )}
+            {errors?.username && (
+              <FormHelperText>{errors?.username?.message}</FormHelperText>
             )}
           </InputHolder>
 
@@ -230,7 +256,7 @@ const RegisterModal = ({ close = () => {}, openFormPlant = () => {} }) => {
             {!isValidEmail &&
               emailSearch?.length > 4 &&
               !isLoadingEmailCheck && (
-                <FormHelperText>This email is already taken</FormHelperText>
+                <FormHelperText>{register.errors.email.three}</FormHelperText>
               )}
             {errors?.email && (
               <FormHelperText>{errors?.email?.message}</FormHelperText>
@@ -254,7 +280,8 @@ const RegisterModal = ({ close = () => {}, openFormPlant = () => {} }) => {
                   message: register.errors.password.one,
                 },
                 pattern: {
-                  value: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/,
+                  value:
+                    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&.,"=¡')(^¨Ç:;+`}{-])[0-9a-zA-Z\d@$!%*?&.,"=¡')(^¨Ç:;+`}{-]{8,}$/,
                   message: register.passwordTooltip,
                 },
               }}
